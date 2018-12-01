@@ -5,18 +5,20 @@ Created on Sat Dec  1 19:46:27 2018
 
 @author: ivanskya
 """
-import os
+
 from flask import Flask
 from flask import jsonify
 from flask import request
 from flask import Response
-from flask import redirect
-from flask import url_for
-from flask import flash
-from flask import session as Session
 
 from werkzeug import create_environ
 from werkzeug.utils import secure_filename
+
+from keras.models import load_model
+
+import numpy as np
+
+import tensorflow as tf
 
 app = Flask(__name__)
 
@@ -27,8 +29,6 @@ environ = create_environ('/','127.0.0.1:5000')
 response = Response()
 
 SESSION_TYPE = 'filesystem'
-
-model = load_model('my_model.h5')
 
 def allowed_file(filename):
     '''
@@ -41,31 +41,42 @@ def allowed_file(filename):
 def upload_file():
    if request.method == 'POST':
       f = request.files['file']
-      f.save(secure_filename('uploaded_files//uploaded_image.raw'))
+      f.save(secure_filename('./uploaded_files/uploaded_image.raw'))
       
       return jsonify(clasify_image())
 
 def clasify_image():
     
+    X_test = np.fromfile('./uploaded_files_uploaded_image.raw', dtype='uint8')
     
+    X_test = X_test.reshape(1, 1, 28, 28)
     
-    probs = model.predict(X_test)
+    X_test = X_test.astype('float32')
+    X_test /= 255
+    
+    global graph
+    with graph.as_default():
+        probs = model.predict(X_test)
+    
+    print(probs)
     
     return (
-            {'0':probs[0], 
-             '1':probs[1], 
-             '2':probs[2], 
-             '3':probs[3], 
-             '4':probs[4], 
-             '5':probs[5], 
-             '6':probs[6], 
-             '7':probs[7], 
-             '8':probs[8], 
-             '9':probs[9]
+            {'0':int(probs[0,0]*100), 
+             '1':int(probs[0,1]*100), 
+             '2':int(probs[0,2]*100), 
+             '3':int(probs[0,3]*100), 
+             '4':int(probs[0,4]*100), 
+             '5':int(probs[0,5]*100), 
+             '6':int(probs[0,6]*100), 
+             '7':int(probs[0,7]*100), 
+             '8':int(probs[0,8]*100), 
+             '9':int(probs[0,9]*100)
              }
             )
     
-    
+model = load_model('my_model.h5')
+graph = tf.get_default_graph()
+
 if __name__ == '__main__':
     app.config['SESSION_TYPE'] = SESSION_TYPE
 

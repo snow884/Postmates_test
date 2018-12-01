@@ -92,12 +92,14 @@ def train_model():
     
     # third convolutional layer number 1
     conv3_1 = Convolution2D(512, 7, 7, activation='relu', border_mode='same')(pool2_1)
+    pool3_1 = MaxPooling2D(pool_size=(2, 2), dim_ordering="th")(conv3_1)
     
     # third convolutional layer number 2
     conv3_2 = Convolution2D(512, 7, 7, activation='relu', border_mode='same')(pool2_2)
+    pool3_2 = MaxPooling2D(pool_size=(2, 2), dim_ordering="th")(conv3_2)
     
     # merge layer
-    merge = concatenate([pool2_1, pool2_2])
+    merge = concatenate([pool3_1, pool3_2])
     
     flat = Flatten()(merge)
     
@@ -119,7 +121,7 @@ def train_model():
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
     
-    model.fit(X_train, Y_train, batch_size=32, nb_epoch=10, verbose=1)
+    model.fit(X_train, Y_train, batch_size=32, nb_epoch=1, verbose=1)
     
     test_loss, test_acc = model.evaluate(X_test, Y_test)
     
