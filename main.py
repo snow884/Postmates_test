@@ -132,23 +132,6 @@ output = Dense(10, activation='softmax')(fc2)
 
 model = Model(inputs=visible, outputs=output)
 
-#model = Sequential()
-# 
-#model.add(Convolution2D(32, 28, 28, activation='relu', border_mode='same', input_shape=(1,28,28)))
-#model.add(MaxPooling2D(pool_size=(2,2), dim_ordering="th"))
-#
-#model.add(Convolution2D(64, 14, 14, activation='relu', border_mode='same'))
-#model.add(MaxPooling2D(pool_size=(2,2), dim_ordering="th"))
-#
-#model.add(Convolution2D(512, 7, 7, activation='relu', border_mode='same'))
-#
-#model.add(Flatten())
-#model.add(Dense(1000, activation='relu'))
-#
-#model.add(Dense(500, activation='relu'))
-#
-#model.add(Dense(10, activation='softmax'))
-
 # summarize layers
 print(model.summary())
 
