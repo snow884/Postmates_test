@@ -8,7 +8,7 @@ Created on Sat Dec  1 11:12:17 2018
 
 # TensorFlow and tf.keras
 import tensorflow as tf
-from tensorflow import keras
+
 from keras.datasets import mnist
 from keras.utils import np_utils
 
@@ -16,18 +16,12 @@ from keras.models import Model
 from keras.layers import Input
 from keras.layers import Dense
 from keras.layers import Flatten
-from keras.layers.convolutional import Conv2D
-from keras.layers.pooling import MaxPooling2D
 from keras.layers.merge import concatenate
-
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Convolution2D, MaxPooling2D
 
 # Helper libraries
 import numpy as np
 #import matplotlib.pyplot as plt
-
 
 #other
 import pickle
@@ -52,10 +46,8 @@ def train_model():
     
     print(tf.__version__)
     
-    #fashion_mnist = keras.datasets.fashion_mnist
-    
-    #(X_train, y_train), (X_test, y_test) = mnist.load_data()
-    #my_save({'X_train':X_train, 'y_train':y_train, 'X_test':X_test, 'y_test':y_test})
+    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    my_save({'X_train':X_train, 'y_train':y_train, 'X_test':X_test, 'y_test':y_test})
     
     data_out = my_load(['X_train', 'y_train', 'X_test', 'y_test'])
     
@@ -133,9 +125,7 @@ def train_model():
     
     print('Test accuracy:', test_acc)
     
-    with open('model.dat','wb') as outfile:
-        pickle.dump(model, outfile)
-        
-def classify(image_in):
-    
+    model.save('my_model.h5')
+
+train_model()
     
