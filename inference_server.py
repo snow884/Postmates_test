@@ -6,19 +6,23 @@ Created on Sat Dec  1 19:46:27 2018
 @author: ivanskya
 """
 
+#for working with files as PIDs
+import os
+
+# flask http server
 from flask import Flask
 from flask import jsonify
 from flask import request
 from flask import Response
-
 from werkzeug import create_environ
 from werkzeug.utils import secure_filename
 
+# keras and tensorflow to be able to read the model
 from keras.models import load_model
-
-import numpy as np
-
 import tensorflow as tf
+
+# numpy for rescaling
+import numpy as np
 
 app = Flask(__name__)
 
@@ -30,35 +34,33 @@ response = Response()
 
 SESSION_TYPE = 'filesystem'
 
-def allowed_file(filename):
-    '''
-    '''
-
-    return '.' in filename and \
-       filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 @app.route('/upload', methods = ['GET', 'POST'])
 def upload_file():
+   '''
+   '''
    if request.method == 'POST':
       f = request.files['file']
-      f.save(secure_filename('./uploaded_files/uploaded_image.raw'))
+      f.save(secure_filename('./uploaded_files/uploaded_image'+str(os.getpid())+'.raw'))
       
+      #return probabilities as json
       return jsonify(clasify_image())
 
 def clasify_image():
-    
-    X_test = np.fromfile('./uploaded_files_uploaded_image.raw', dtype='uint8')
+    '''
+    '''
+   
+    X_test = np.fromfile('./uploaded_files_uploaded_image'+str(os.getpid())+'.raw', dtype='uint8')
+    os.path.exists('./uploaded_files_uploaded_image'+str(os.getpid())+'.raw')
     
     X_test = X_test.reshape(1, 1, 28, 28)
     
     X_test = X_test.astype('float32')
     X_test /= 255
     
+    # this is a trick to get keras working in multiple threads
     global graph
     with graph.as_default():
         probs = model.predict(X_test)
-    
-    print(probs)
     
     return (
             {'0':int(probs[0,0]*100), 

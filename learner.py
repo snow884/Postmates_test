@@ -8,10 +8,7 @@ Created on Sat Dec  1 11:12:17 2018
 
 # TensorFlow and tf.keras
 import tensorflow as tf
-
 from keras.datasets import mnist
-from keras.utils import np_utils
-
 from keras.models import Model
 from keras.layers import Input
 from keras.layers import Dense
@@ -19,20 +16,23 @@ from keras.layers import Flatten
 from keras.layers.merge import concatenate
 from keras.layers import Convolution2D, MaxPooling2D
 
-# Helper libraries
-import numpy as np
-#import matplotlib.pyplot as plt
-
 #other
 import pickle
 
 def my_save(data_in):
+    '''
+    This is just a helper function for saving the data so that they dont have to
+    be repeatedly downloaded.
+    '''
     
     for data_label in list(data_in):
         with open(data_label + '.dat','wb') as outfile:
             pickle.dump(data_in[data_label], outfile)
     
 def my_load(labels_in):
+    '''
+    This is
+    '''
     
     data_out = {}
     
@@ -43,9 +43,7 @@ def my_load(labels_in):
     return(data_out)
 
 def train_model():
-    
-    print(tf.__version__)
-    
+
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
     my_save({'X_train':X_train, 'y_train':y_train, 'X_test':X_test, 'y_test':y_test})
     
@@ -72,9 +70,7 @@ def train_model():
     Y_test = y_test
     
     print(Y_train.shape)
-    
-    class_names = ['0','1', '2', '3', '4', '5', '6', '7', '8', '9']
-    
+
     # input layer
     visible = Input(shape=(1,28,28))
     
@@ -121,7 +117,7 @@ def train_model():
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
     
-    model.fit(X_train, Y_train, batch_size=32, nb_epoch=1, verbose=1)
+    model.fit(X_train, Y_train, batch_size=32, nb_epoch=10, verbose=1)
     
     test_loss, test_acc = model.evaluate(X_test, Y_test)
     
