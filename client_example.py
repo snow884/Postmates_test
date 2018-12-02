@@ -14,9 +14,6 @@ import pycurl
 # io for retieving responses from pycurl
 from io import BytesIO
 
-# matplotlib for plotting
-from matplotlib import pyplot as plt
-
 # jsom for parsing the output
 import json
 
@@ -65,8 +62,7 @@ X_train = X_train.reshape(X_train.shape[0], 1, 28, 28)
 X_test = X_test.reshape(X_test.shape[0], 1, 28, 28)
 
 # select one datapoint, plot it and send it to server
-data_index = 100
-plt.imshow(X_test[data_index,0,:,:])
+data_index = 9001
 print( call_server(X_test[data_index,:,:,:]) )
 print(y_test[data_index])
 

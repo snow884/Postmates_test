@@ -25,17 +25,19 @@ def my_save(data_in):
     be repeatedly downloaded.
     '''
     
+    # save the data to the disk using pickle serilizer
     for data_label in list(data_in):
         with open(data_label + '.dat','wb') as outfile:
             pickle.dump(data_in[data_label], outfile)
     
 def my_load(labels_in):
     '''
-    This is
+    This is another helper function for leading of the MNIST data from local disk
     '''
     
     data_out = {}
     
+    # load data from disk using pickle serilizer
     for data_label in labels_in:
         with open(data_label + '.dat','rb') as infile:
             data_out[data_label] = pickle.load(infile)
@@ -43,34 +45,41 @@ def my_load(labels_in):
     return(data_out)
 
 def train_model():
-
+    '''
+    The main training heppens here
+    '''
+    
+    # download the data from the server
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    
+    #save the data locally
     my_save({'X_train':X_train, 'y_train':y_train, 'X_test':X_test, 'y_test':y_test})
     
+    #load the data
     data_out = my_load(['X_train', 'y_train', 'X_test', 'y_test'])
     
+    # save the data into numpy arrays
     X_train = data_out['X_train']
     y_train = data_out['y_train']
     X_test = data_out['X_test']
     y_test = data_out['y_test']
     
+    # Make sure the image values are between 0.0 and 1.0
     X_train = X_train.astype('float32')
     X_test = X_test.astype('float32')
     X_train /= 255
     X_test /= 255
     
+    # reshape the data as images with only one color channel
     X_train = X_train.reshape(X_train.shape[0], 1, 28, 28)
     X_test = X_test.reshape(X_test.shape[0], 1, 28, 28)
-    
-    print(y_train.shape)
-    
-    print(y_train[:10])
-    
     Y_train = y_train
     Y_test = y_test
     
     print(Y_train.shape)
-
+    
+    # NEURAL NETWORK STRUCTURE
+    
     # input layer
     visible = Input(shape=(1,28,28))
     
@@ -96,7 +105,6 @@ def train_model():
     
     # merge layer
     merge = concatenate([pool3_1, pool3_2])
-    
     flat = Flatten()(merge)
     
     # first fully connected layer
@@ -113,16 +121,19 @@ def train_model():
     # summarize layers
     print(model.summary())
     
+    # compile the model
     model.compile(optimizer=tf.train.AdamOptimizer(), 
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
     
-    model.fit(X_train, Y_train, batch_size=32, nb_epoch=10, verbose=1)
+    # fitting of the model
+    model.fit(X_train, Y_train, batch_size=32, nb_epoch=5, verbose=1)
     
+    # model evaluation
     test_loss, test_acc = model.evaluate(X_test, Y_test)
-    
     print('Test accuracy:', test_acc)
     
+    #save model
     model.save('my_model.h5')
 
 train_model()

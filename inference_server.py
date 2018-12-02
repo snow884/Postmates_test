@@ -44,7 +44,15 @@ def upload_file():
       
       #return probabilities as json
       return jsonify(clasify_image())
-
+    
+   else:
+       return(
+             '''
+             Please use the POST method to interact with this API.
+             '''
+             )
+      
+    
 def clasify_image():
     '''
     '''
