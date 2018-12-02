@@ -18,9 +18,13 @@ from io import BytesIO
 import json
 
 def my_load(labels_in):
+    '''
+    This is a helper function for loading MNIST data from disk
+    '''
     
     data_out = {}
     
+    # Load the data using pickle serilizer
     for data_label in labels_in:
         with open(data_label + '.dat','rb') as infile:
             data_out[data_label] = pickle.load(infile)
@@ -28,6 +32,9 @@ def my_load(labels_in):
     return(data_out)
 
 def call_server(X_test_in):
+    '''
+    This function interacts with the server API
+    '''
     
     # write numpy array as "raw image"
     X_test_in.astype('int8').tofile('image.raw')
@@ -62,7 +69,7 @@ X_train = X_train.reshape(X_train.shape[0], 1, 28, 28)
 X_test = X_test.reshape(X_test.shape[0], 1, 28, 28)
 
 # select one datapoint, plot it and send it to server
-data_index = 9001
+data_index = 123
 print( call_server(X_test[data_index,:,:,:]) )
 print(y_test[data_index])
 

@@ -26,6 +26,7 @@ import numpy as np
 
 app = Flask(__name__)
 
+# HTTP server setup
 UPLOAD_FOLDER = '/Users/ivanskya/Documents/Python/Postmates_test/uploaded_files/'
 ALLOWED_EXTENSIONS = set(['xml'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -37,6 +38,7 @@ SESSION_TYPE = 'filesystem'
 @app.route('/upload', methods = ['GET', 'POST'])
 def upload_file():
    '''
+   Flask function called after the server recieves a POST of a GET reqest
    '''
    if request.method == 'POST':
       f = request.files['file']
@@ -55,13 +57,17 @@ def upload_file():
     
 def clasify_image():
     '''
+    The function for image classification
     '''
-   
+    
+    #read the image saved by the previous function
     X_test = np.fromfile('./uploaded_files_uploaded_image'+str(os.getpid())+'.raw', dtype='uint8')
     os.path.exists('./uploaded_files_uploaded_image'+str(os.getpid())+'.raw')
     
+    # reshape the image
     X_test = X_test.reshape(1, 1, 28, 28)
     
+    # make sure the pixel intensities are between 0 and 1
     X_test = X_test.astype('float32')
     X_test /= 255
     
@@ -70,6 +76,7 @@ def clasify_image():
     with graph.as_default():
         probs = model.predict(X_test)
     
+    # return the probabilities
     return (
             {'0':int(probs[0,0]*100), 
              '1':int(probs[0,1]*100), 
@@ -84,6 +91,7 @@ def clasify_image():
              }
             )
     
+# load the model
 model = load_model('my_model.h5')
 graph = tf.get_default_graph()
 
